@@ -1,14 +1,11 @@
 import tornado
 import tornado.ioloop
 import tornado.web
-import threading
 import time
 import multiprocessing
 from threadone import service as oneservice
 from threadtwo import service as twoservice
 from threadthree import service as threeservice
-from zmq.eventloop import ioloop, zmqstream
-#ioloop.install()
 import zmq
 context = zmq.Context()
 
@@ -16,37 +13,30 @@ def timeout():
     print "timeout"
     return
 
-def onethread():
+def one():
     one = oneservice.service()
     one.run()
     return
 
-def twothread():
+def two():
     two = twoservice.service()
     two.run()
     return
 
-def threethread():
+def three():
     three = threeservice.service()
     three.run()
     return
 
 
 if __name__ == "__main__":
-   # threadone = threading.Thread(target=onethread, args=())
-   # threadone.start()
-    threadone = multiprocessing.Process(target=onethread, args=())
-    threadtwo = multiprocessing.Process(target=twothread, args=())
-    threadthree = multiprocessing.Process(target=threethread, args=())
-    threadthree.start()
-    threadtwo.start()
+    serviceone = multiprocessing.Process(target=one, args=())
+    servicetwo = multiprocessing.Process(target=two, args=())
+    servicethree = multiprocessing.Process(target=three, args=())
+    servicethree.start()
+    servicetwo.start()
+    serviceone.start()
 
-    threadone.start()
-   # tornado.ioloop.IOLoop().instance().start()
-
-
-    #threadone.join()
-  #  ioloop.IOLoop().instance().start()
     for p in multiprocessing.active_children():
         print("child   p.name:" + p.name + "\tp.id" + str(p.pid))
     # ioloop.IOLoop().instance().start()
